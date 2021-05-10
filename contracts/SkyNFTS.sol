@@ -12,7 +12,7 @@ contract SkyNFTS is ERC721, Ownable {
     mapping (uint => bool) public listedTokens;
     mapping (uint => address) public tokenCreator;
 
-    event Minted(address indexed owner, uint256 tokenId, string tokenURI);
+    event Minted(address indexed owner, uint256 tokenId, string tokenURI, uint price);
     event Purchased(address indexed previousOwner, address indexed newOwner, uint price, uint tokenId, string uri);
     event PriceUpdate(address indexed owner, uint oldPrice, uint newPrice, uint tokenId);
     event NftListStatus(address indexed owner, uint tokenId, bool isListed);
@@ -35,15 +35,18 @@ contract SkyNFTS is ERC721, Ownable {
     /**
      * @dev Public function to mint new token, assigns uri to token, sets sender as creator
      */
-    function mint(string memory _tokenURI) public returns (uint) {
+    function mint(string memory _tokenURI, uint _price) public returns (uint) {
         uint _tokenId = totalSupply() + 1;
 
         _mint(msg.sender, _tokenId);
         _setTokenURI(_tokenId, _tokenURI);
         _setTokenCreator(_tokenId, msg.sender);
 
+        //Autolist token
+        listedTokens[_tokenId] = true;
+        price[_tokenId] = _price;
 
-        emit Minted(msg.sender, _tokenId, _tokenURI);
+        emit Minted(msg.sender, _tokenId, _tokenURI, _price);
 
         return _tokenId;
     }
