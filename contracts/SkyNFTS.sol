@@ -14,8 +14,8 @@ contract SkyNFTS is ERC721, Ownable {
 
     event Minted(address indexed owner, uint256 tokenId, string tokenURI, uint price);
     event Purchased(address indexed previousOwner, address indexed newOwner, uint price, uint tokenId, string uri);
-    event PriceUpdate(address indexed owner, uint oldPrice, uint newPrice, uint tokenId);
-    event NftListStatus(address indexed owner, uint tokenId, bool isListed);
+    // event PriceUpdate(address indexed owner, uint oldPrice, uint newPrice, uint tokenId);
+    event NftListStatus(address indexed owner, uint tokenId, bool isListed, uint oldPrice, uint newPrice);
 
     constructor() ERC721("Sky NFToken", "SNFTS") public {
 
@@ -99,21 +99,24 @@ contract SkyNFTS is ERC721, Ownable {
         listedTokens[_tokenId] = false;
     }
 
-    function updatePrice(uint _tokenId, uint _price) public returns (bool) {
-        uint oldPrice = price[_tokenId];
-        require(msg.sender == ownerOf(_tokenId), "Error, you are not the owner");
-        price[_tokenId] = _price;
+    // function updatePrice(uint _tokenId, uint _price) public returns (bool) {
+    //     uint oldPrice = price[_tokenId];
+    //     require(msg.sender == ownerOf(_tokenId), "Error, you are not the owner");
+    //     price[_tokenId] = _price;
 
-        emit PriceUpdate(msg.sender, oldPrice, _price, _tokenId);
-        return true;
-    }
+    //     emit PriceUpdate(msg.sender, oldPrice, _price, _tokenId);
+    //     return true;
+    // }
 
-    function updateListingStatus(uint _tokenId, bool _shouldBeListed) public returns (bool) {
+    function updateListingStatus(uint _tokenId, bool _shouldBeListed, uint _price) public returns (bool) {
         require(msg.sender == ownerOf(_tokenId), "Error, you are not the owner");
+
+        uint _oldPrice = price[_tokenId];
 
         listedTokens[_tokenId] = _shouldBeListed;
+        price[_tokenId] = _price;
 
-        emit NftListStatus(msg.sender, _tokenId, _shouldBeListed);
+        emit NftListStatus(msg.sender, _tokenId, _shouldBeListed, _oldPrice, _price);
 
         return true;
     }
